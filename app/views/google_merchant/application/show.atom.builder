@@ -10,6 +10,6 @@ atom_feed \
   xml.updated @configuration.feed_updated.call.strftime("%Y-%m-%dT%H:%M:%SZ")
   
   @configuration.entries.call.each do |entry|
-    xml << render(partial: 'google_merchant/feed/index/entry', locals: {entry: entry})
+    xml << render(partial: 'google_merchant/application/show/entry', locals: {entry: entry})
   end
 end

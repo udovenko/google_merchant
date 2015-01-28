@@ -1,3 +1,3 @@
 GoogleMerchant::Engine.routes.draw do
-  root to: "feed#index"
+  root to: "application#show"
 end

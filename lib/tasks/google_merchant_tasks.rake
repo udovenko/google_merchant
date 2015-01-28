@@ -3,29 +3,22 @@ namespace :google_merchant do
   
   
   task generate: :environment do
-   
-    include Rails.application.routes.url_helpers # brings ActionDispatch::Routing::UrlFor
+    
+    # Bring ActionDispatch::Routing::UrlFor:
+    include Rails.application.routes.url_helpers 
     include ActionView::Helpers::TagHelper
 
     action_view = ActionView::Base.new(GoogleMerchant::Engine.path_to_views)
-  
     action_view.assign({
       :configuration => GoogleMerchant::configuration
     })
-  
-    #f = File.new(file_name, 'w')
-    puts(action_view.render(:template => "google_merchant/feed/index"))
-    #f.close
-  
-
-=begin    
-    controller = ApplicationController.new
-    #controller.request = 
-    controller.render_to_string(
-  :template => 'google_merchant/feed/index',
-  :locals => { :@configuration => GoogleMerchant::configuration }
-)
-=end
+    
+    puts "Building Atom feed file #{GoogleMerchant::configuration.path}..."
+    
+    feed_file = File.new("public/#{GoogleMerchant::configuration.path}", 'w')
+    feed_file.puts(action_view.render(:template => "google_merchant/application/show"))
+    feed_file.close
+    
+    puts "Atom feed file was built successfully!"
   end
-
 end
