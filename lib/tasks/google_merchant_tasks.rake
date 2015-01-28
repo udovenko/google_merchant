@@ -1,10 +1,21 @@
 namespace :google_merchant do
-  desc "Generates Google Merchant feed file"
   
   
+  desc "Google Merchant plugin tasks"
+  
+  
+  #
+  #
+  task update: :environment do
+    GoogleMerchant::Category.update
+  end
+  
+  
+  #
+  #
   task generate: :environment do
     
-    # Bring ActionDispatch::Routing::UrlFor:
+    # Bring ActionDispatch::Routing::UrlFor helpers:
     include Rails.application.routes.url_helpers 
     include ActionView::Helpers::TagHelper
 
