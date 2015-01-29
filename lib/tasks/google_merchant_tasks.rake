@@ -4,15 +4,15 @@ namespace :google_merchant do
   desc "Google Merchant plugin tasks"
   
   
-  #
-  #
+  # Updates categories tree from Google product categories remote file.
   task update: :environment do
+    GoogleMerchant::Category.verbose = true
     GoogleMerchant::Category.update
   end
   
   
-  #
-  #
+  # Generates Atom feed for Google Merchant in Rails application's public 
+  # directory. 
   task generate: :environment do
     
     # Bring ActionDispatch::Routing::UrlFor helpers:
