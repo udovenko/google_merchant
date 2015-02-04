@@ -1,3 +1,3 @@
 GoogleMerchant::Engine.routes.draw do
-  root to: "application#show"
+  get 'feed(.:format)', to: "application#feed"
 end

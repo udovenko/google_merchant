@@ -8,10 +8,9 @@ module GoogleMerchant
     
     #
     #
-    def show
+    def feed
       @configuration = GoogleMerchant::configuration;
       
-      request.format = "atom" unless params[:format]
       respond_to do |format|
         format.atom { render :layout => false }
       end
