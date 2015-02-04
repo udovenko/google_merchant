@@ -5,7 +5,7 @@ module GoogleMerchant
   # Google categories plain text file.
   #
   # @author Denis Udovenko
-  # @version 1.0.3
+  # @version 1.0.4
   class Category < ActiveRecord::Base
     
     
@@ -29,12 +29,14 @@ module GoogleMerchant
     # to the table. Calculates elapsed time and count of created records in 
     # verbose mode.
     def self.update
-      
+            
       # Remember initial time and record count for verbose mode:
       if self.verbose
         beginning_time = Time.now
         initial_record_count = self.count
       end
+      
+      @cache = []
         
       # Open remote text file with Google product categories for further operations:
       open(GoogleMerchant::configuration.taxonomy_file_url, "r") do |file|
@@ -47,10 +49,11 @@ module GoogleMerchant
           category_names_from_file = line.split(TAXONOMY_FILE_CATEGORIES_SEPARATOR)
        
           # If one of categories in hierarchy not found in cached roots or their descendants:
-          category_missing_conditions = includes_not_cashed_category?(category_names_from_file)
-          if category_missing_conditions
-            parent = category_missing_conditions[:parent_model]
-            category_name = category_missing_conditions[:category_name]
+          category_creation_conditions = category_to_create(category_names_from_file)
+          
+          if category_creation_conditions
+            parent = category_creation_conditions[:parent_model]
+            category_name = category_creation_conditions[:category_name]
             category_name_attr = { name: category_name }
             
             # If cache contains category parent, create a child:
@@ -59,6 +62,7 @@ module GoogleMerchant
               category_model = self.create!(category_name_attr)            
               category_model.move_to_child_of(parent)
               parent.reload
+              parent.children.reload
               
             # If category is root and not in the cache:  
             else
@@ -71,7 +75,7 @@ module GoogleMerchant
               else
                 puts " - root found in database" if self.verbose
               end
-              @cash << category_model
+              @cache << category_model
             end
           end
         end
@@ -92,42 +96,47 @@ module GoogleMerchant
       
       # Checks if given category names are cached as root models or their
       # descendants. If one of category names has no corresponding node in 
-      # cache.
+      # cache, returns category creation conditions.
       #
       # @param {Array} category_names_array Array with category names hierarchy
-      # @return {Hash, false} Hash with missed category name and its cashed parent (or nil, if root is missed) of false if hierarchy cashed
-      def self.includes_not_cashed_category?(category_names_array)
-        @cash ||= []
-        
-        parent_cash_node = nil
+      # @return {Hash, false} Hash with missed category name and its cached parent (or nil, if root is missed) of false if hierarchy cached
+      def self.category_to_create(category_names_array)
+        parent_node_form_cache = nil
 
         category_names_array.each do |category_name|
+          category_node_from_cache = in_cache?(parent_node_form_cache, category_name)
           
-          # If current node name is a name of root:
-          unless parent_cash_node
-            print " - looking for root \"#{category_name}\"..." if self.verbose
-            category_cash_node = @cash.detect { |root_node| root_node.name == category_name }
-            
-            return { category_name: category_name } unless category_cash_node
-                        
-            puts "found in cache" if self.verbose
-            parent_cash_node = category_cash_node
-                   
-          # If current node is a child of current parent category in the source line:    
-          else
-            print " - looking for child \"#{category_name}\" in \"#{parent_cash_node.name}\"..." if self.verbose
-            category_cash_node = load_and_detect(parent_cash_node.children, {name: category_name})
-            
-            return { 
-              parent_model: parent_cash_node, 
-              category_name: category_name 
-            } unless category_cash_node
-           
-            parent_cash_node = category_cash_node
-          end  
-        end
+          return { 
+            parent_model: parent_node_form_cache, 
+            category_name: category_name } unless category_node_from_cache
+         
+          parent_node_form_cache = category_node_from_cache
+        end  
         
         return false
+      end
+      
+      
+      # Checks if given category is cached by given category name and existing 
+      # parent node.
+      #
+      # @param {Category, nil} parent_node_form_cache Existing parent node for sought-for category
+      # @param {String} category_name Sought-for category name
+      # @return {Category, nil} Found category node or nil
+      def self.in_cache?(parent_node_form_cache, category_name)
+        success_phrase = "found in cache"
+        
+        if parent_node_form_cache
+          print " - looking for child \"#{category_name}\" in \"#{parent_node_form_cache.name}\"..." if self.verbose
+          found_child_category = detect_model(parent_node_form_cache.children, {name: category_name})
+          puts success_phrase if found_child_category && self.verbose
+          return found_child_category
+        else
+          print " - looking for root \"#{category_name}\"..." if self.verbose
+          found_root = @cache.detect { |root_node| root_node.name == category_name }
+          puts success_phrase if found_root && self.verbose
+          return found_root
+        end  
       end
       
       
@@ -137,26 +146,14 @@ module GoogleMerchant
       # @param {Association} association Parent category's has_many association
       # @param {Hash} conditions Search conditions hash
       # @return {Category, nil} Found Child category or nil
-      def self.load_and_detect(association, conditions)
-        in_cache = association.loaded?
-
-        result = association.detect do |model|
+      def self.detect_model(association, conditions)
+        association.detect do |model|
           found = true
           conditions.each do |key, value|
             found = false unless model.send(key) == value
           end
           found
         end
-        
-        if self.verbose
-          if result
-            puts(in_cache ? "found in cache" : "found in database")
-          else
-            puts "not found"
-          end  
-        end
-        
-        result
       end
   end
 end
