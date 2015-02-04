@@ -13,6 +13,9 @@ gem 'active_admin-awesome_nested_set-dependent_selection', git: 'git://github.co
 And then execute:
 
     $ bundle install
+    $ rails generate google_merchant:install
+    
+Last command will copy initializer template and mount gem engine routes to your application.
 
 ## Usage
 
@@ -28,7 +31,7 @@ To generate feed file according to relative path and format given in configurati
 You can use **Whenever gem** to schedule feed generation as frequently as required:
 
     every 1.day, :at => '5:00 am' do
-      rake "google_merchant:feed:generate"
+      rake 'google_merchant:feed:generate'
     end 
 
 ## Categories tree
