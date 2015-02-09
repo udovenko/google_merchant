@@ -4,12 +4,13 @@ module GoogleMerchant
   # Plugin configuration class.
   #
   # @author Denis Udovenko
-  # @version 1.0.3
+  # @version 1.0.4
   class Configuration
     
     
-    attr_accessor :taxonomy_file_url, :language, :host, :protocol, :feed_path, 
-      :feed_format, :feed_title, :feed_updated, :entries
+    attr_accessor :taxonomy_file_url, :language, :host, :protocol, 
+      :feed_file_path, :feed_file_name, :feed_file_format, :feed_title, 
+      :feed_updated, :entries
     
     
     # Public constructor. Sets up configuration defaults.
@@ -18,8 +19,9 @@ module GoogleMerchant
       @language = "en-US"
       @host = "myhost.com"
       @protocol = "http"
-      @feed_path = "google_merchant"
-      @feed_format = "atom"
+      @feed_file_path = ""
+      @feed_file_name = "google_merchant"
+      @feed_file_format = "atom"
       @feed_title = "My Google Merchant Feed"
       @feed_updated = Proc.new { Time.zone.now }
       @entries = []

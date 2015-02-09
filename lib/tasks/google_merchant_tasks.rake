@@ -24,14 +24,19 @@ namespace :google_merchant do
       action_view.assign({
         :configuration => GoogleMerchant::configuration
       })
+    
+      full_file_name = "#{GoogleMerchant::configuration.feed_file_path}" + 
+        "#{GoogleMerchant::configuration.feed_file_name}" +
+        ".#{GoogleMerchant::configuration.feed_file_format}"
 
-      puts "Building feed file #{GoogleMerchant::configuration.feed_path}.#{GoogleMerchant::configuration.feed_format}..."
-
-      feed_file = File.new("public/#{GoogleMerchant::configuration.feed_path}.#{GoogleMerchant::configuration.feed_format}", 'w')
-      feed_file.puts(action_view.render(template: "google_merchant/application/feed.#{GoogleMerchant::configuration.feed_format}"))
+      puts "Building feed file #{full_file_name}..."
+      feed_file = File.new("public/#{full_file_name}", 'w')
+      feed_file.puts(action_view.render(
+        template: "google_merchant/application/feed.#{GoogleMerchant::configuration.feed_file_format}"))
+      
       feed_file.close
 
-      puts "Atom feed file was built successfully!"
+      puts "Feed file was built successfully!"
     end
   end
 end
