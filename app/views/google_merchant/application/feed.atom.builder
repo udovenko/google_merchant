@@ -2,9 +2,9 @@ root_url = "#{@configuration.protocol}://#{@configuration.host}"
 atom_feed \
   'xmlns:g' => 'http://base.google.com/ns/1.0', 
   language: @configuration.language,
-  id: "tag:#{@configuration.host},2005:#{@configuration.path}",
+  id: "tag:#{@configuration.host},2005:#{@configuration.feed_path}.#{@configuration.feed_format}",
   root_url: root_url,
-  url: "#{root_url}#{@configuration.path}" do
+  url: "#{root_url}/#{@configuration.feed_path}.#{@configuration.feed_format}" do
   
   xml.title @configuration.feed_title
   xml.updated @configuration.feed_updated.call.strftime("%Y-%m-%dT%H:%M:%SZ")
