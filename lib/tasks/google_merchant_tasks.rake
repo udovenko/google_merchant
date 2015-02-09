@@ -25,10 +25,10 @@ namespace :google_merchant do
         :configuration => GoogleMerchant::configuration
       })
 
-      puts "Building Atom feed file #{GoogleMerchant::configuration.path}..."
+      puts "Building feed file #{GoogleMerchant::configuration.feed_path}.#{GoogleMerchant::configuration.feed_format}..."
 
-      feed_file = File.new("public/#{GoogleMerchant::configuration.path}", 'w')
-      feed_file.puts(action_view.render(:template => "google_merchant/application/feed"))
+      feed_file = File.new("public/#{GoogleMerchant::configuration.feed_path}.#{GoogleMerchant::configuration.feed_format}", 'w')
+      feed_file.puts(action_view.render(template: "google_merchant/application/feed.#{GoogleMerchant::configuration.feed_format}"))
       feed_file.close
 
       puts "Atom feed file was built successfully!"

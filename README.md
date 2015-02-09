@@ -1,5 +1,7 @@
 # GoogleMerchant
 
+> **In development**
+
 Provides functionality for Google Merchant feed generation in **.atom** format. Additionally allows to create a model for Google Products Categories using **Awesome Nested Set gem** and build categories tree from remote plain text file provided by Google.
 
 ## Installation
@@ -21,7 +23,12 @@ Last command will copy initializer template and mount gem engine routes to your 
 
 This gem can be used for two purposes: **Google Merchant feed generation** and **Google Product Categories tree building**. Each part of functionality is optional but it's advisable to use them together.
 
+## Configuration
+
+Check **initializers/google_merchant.rb** after gem installation to see the configuration example. Since the gem was created for custom shops without any e-commerce solutions like **Spree**, mapping products to feed view is just an array generation within a proc., so you can manage feed tags content absolutely without restrictions. 
+
 ## Feed
+
 By default, feed is available on demand as a controller action by route **google_merchant/feed.atom**. This means it will be always generated again for each request, which could be expensive for a big amount of products. In this case consider feed file generation.
 
 To generate feed file according to relative path and format given in configuration, execute: 

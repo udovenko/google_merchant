@@ -8,8 +8,8 @@ module GoogleMerchant
   class Configuration
     
     
-    attr_accessor :taxonomy_file_url, :language, :host, :protocol, :path, 
-      :feed_title, :feed_updated, :entries
+    attr_accessor :taxonomy_file_url, :language, :host, :protocol, :feed_path, 
+      :feed_format, :feed_title, :feed_updated, :entries
     
     
     # Public constructor. Sets up configuration defaults.
@@ -18,7 +18,8 @@ module GoogleMerchant
       @language = "en-US"
       @host = "myhost.com"
       @protocol = "http"
-      @path = "google_merchant.atom"
+      @feed_path = "google_merchant"
+      @feed_format = "atom"
       @feed_title = "My Google Merchant Feed"
       @feed_updated = Proc.new { Time.zone.now }
       @entries = []
